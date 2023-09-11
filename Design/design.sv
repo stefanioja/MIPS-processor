@@ -1,0 +1,13 @@
+// Code your design here
+`include "PC_design.v"
+`include "InstructionMemory_design.v"
+`include "ControlUnit_design.v"
+`include "MUX_design.v"
+`include "RegisterFile_design.v"
+`include "ALUControl_design.v"
+`include "ALU_design.v"
+`include "DataMemory_design.v"
+`include "SignExt_design.v"
+`include "Adder_design.v"
+`include "Shift_design.v"
+`include "AND_design.v"
