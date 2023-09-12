@@ -97,9 +97,14 @@ def IType(instruction, regS, regD, immediate):
 def JType(instruction, offset):
     global symbolsList
 
+    offset.strip(" ")
+    offset = offset.strip("\n")
+    
     if(offset.isdigit()):
         offset = format(int(offset), 'b')
     else:
-        offset = format(int(symbolsList[offset.strip("\n")]), 'b')
+        if offset not in symbolsList:
+            exit("invalid jump label: {}".format(offset))
+        offset = format(int(symbolsList[offset]), 'b')
 
     return instruction + (26 - len(offset)) * "0" + offset
