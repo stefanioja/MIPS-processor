@@ -2,29 +2,37 @@ from dicts import *
 
 def PreProcess(lines):
     global symbolsList
-
     postProcessLines = []
     counter = 0
 
     for line in lines:
-        line = line.lower()
-        line = line.split("#", 1)[0] #gets rid of comments
-        if len(line) > 0:
-            checkStartJump = line.find(":")
-            if checkStartJump != -1: 
-                symbol = line.split(":", 1)[0].strip(":").lstrip(" ")
-                symbolsList[symbol] = str(counter)              #maps jumps to instruction number
-                line = line[checkStartJump + 1:len(line) - 1]            #gets rid of the jump start
 
-            line = line.strip(" ")      #gets rid of leading whitespaces
-            line = line.lower()
+        line = line.lower()
+        line = line.split("#", 1)[0]                                #gets rid of comments
+        line = line.strip(" ")
+
+        checkStartJump = line.find(":")
+        if checkStartJump != -1:                                    #processing for jump keywords
+            symbol = line.split(":", 1)[0].strip(":").lstrip(" ")
+            symbolsList[symbol] = str(counter)                       
+            line = line[checkStartJump + 1:len(line) - 1] 
+
+        if len(line) > 0:
+            line = line.strip(" ")    
             postProcessLines.append(line)
-        counter = counter + 1
+            counter = counter + 1
 
     return postProcessLines
 
 def ProcessLine(line):
-    [opCode, instrType] = instructionList[line.split(" ")[0]] 
+    global instructionList
+    global funcList
+
+    instruction = line.split(" ")[0]
+    if instruction not in instructionList:
+        exit("invalid instruction: {}".format(instruction))
+
+    [opCode, instrType] = instructionList[instruction] 
 
     match instrType:
         case "R":
@@ -53,17 +61,21 @@ def ProcessLine(line):
             
 def DecodeRegister(reg):
     global regList;
+
     if(reg[1].isdigit()):
-        digit = format(int(reg.replace("$", "")), 'b')
+        digit = int(reg.replace("$", ""))
+        if digit > 31:
+            exit("invalid register: {}".format(reg))
+        digit = format(digit, "b")
     else:
+        if reg not in regList:
+            exit("invalid register: {}".format(reg))
         return regList[reg];
     
     return (5 - len(digit)) * "0" + digit
 
 def RType(instruction, regS, regT, regD):
-    
     shamt = "00000"
-
     rs = DecodeRegister(regS)
     rt = DecodeRegister(regT)
     rd = DecodeRegister(regD)
@@ -71,23 +83,23 @@ def RType(instruction, regS, regT, regD):
     return "000000" + rs + rt + rd + shamt + instruction  
 
 def IType(instruction, regS, regD, immediate):
-
     global symbolsList
+    rs = DecodeRegister(regS)
+    rd = DecodeRegister(regD)
+
     if(immediate.isdigit()):
         immediate = format(int(immediate), 'b')
     else:
-        immediate = format(int(symbolsList[immediate]), 'b')
+        immediate = format(int(symbolsList[immediate.strip("\n")]), 'b')
 
-    rs = DecodeRegister(regS)
-    rd = DecodeRegister(regD)
     return instruction + rs + rd + (16 - len(immediate)) * "0" + immediate
 
 def JType(instruction, offset):
-
     global symbolsList
 
     if(offset.isdigit()):
         offset = format(int(offset), 'b')
     else:
-        offset = format(int(symbolsList[offset]), 'b')
+        offset = format(int(symbolsList[offset.strip("\n")]), 'b')
+
     return instruction + (26 - len(offset)) * "0" + offset
