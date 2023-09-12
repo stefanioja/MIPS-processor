@@ -19,7 +19,7 @@ module InstructionMemory(Addr,
   reg[31:0]         ASM [31:0];
   
   initial begin
-    $readmemh ("memfile.dat",ASM);
+    $readmemb ("memfile.dat",ASM);
   end
   
   always @(Addr) begin
