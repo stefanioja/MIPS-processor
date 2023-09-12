@@ -1,3 +1,0 @@
-START: add $8, $9, $10
-and $8, $9, $10
-j START
