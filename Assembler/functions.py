@@ -39,7 +39,11 @@ def ProcessLine(line):
             splitLine = line.split(" ", 1)
             instruction = funcList[splitLine[0]]
             registers = splitLine[1].replace(" ", "")
-            [regS, regT, regD] = [registers.split(",")[1], registers.split(",")[2], registers.split(",")[0]]
+            
+            if(splitLine[0] == "jr"):
+                [regS, regT, regD] = [registers, "$0", "$0"]
+            else:
+                [regS, regT, regD] = [registers.split(",")[1], registers.split(",")[2], registers.split(",")[0]]
 
             return RType(instruction, regS, regT, regD);
         case "I":
@@ -60,7 +64,8 @@ def ProcessLine(line):
             return JType(opCode, offset);
             
 def DecodeRegister(reg):
-    global regList;
+    global regList
+    reg = reg.strip("\n")
 
     if(reg[1].isdigit()):
         digit = int(reg.replace("$", ""))
@@ -76,14 +81,21 @@ def DecodeRegister(reg):
 
 def RType(instruction, regS, regT, regD):
     shamt = "00000"
-    rs = DecodeRegister(regS)
-    rt = DecodeRegister(regT)
-    rd = DecodeRegister(regD)
+    if(instruction == "000000"):
+        shamt = format(int(regT), "b")
+        rs = "00000"
+        rt = DecodeRegister(regS);
+        rd = DecodeRegister(regD);
+    else:
+        rs = DecodeRegister(regS)
+        rt = DecodeRegister(regT)
+        rd = DecodeRegister(regD)
     
     return "000000" + rs + rt + rd + shamt + instruction  
 
 def IType(instruction, regS, regD, immediate):
     global symbolsList
+    
     rs = DecodeRegister(regS)
     rd = DecodeRegister(regD)
 

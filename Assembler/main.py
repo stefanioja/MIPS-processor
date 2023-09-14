@@ -2,7 +2,7 @@ from functions import *
 import sys
 from os.path import exists
 
-file_machineCode = "memory.dat"
+file_machineCode = "memfile.dat"
 
 if len(sys.argv) == 1:
     exit("no asm file provided")
