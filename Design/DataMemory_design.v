@@ -14,8 +14,7 @@ module DataMemory(Addr,
   
   
   reg [31:0]        RegBank[63:0];
-  
-  
+   
   integer i;
   initial begin
     for(i = 0;i < 64;i = i + 1)

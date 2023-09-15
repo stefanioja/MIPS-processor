@@ -30,7 +30,7 @@ module RegisterFile(Clk,
   end
   
   always @(posedge Clk) begin
-    if(WriteEnable) begin
+    if(WriteEnable && Addr3 != 0) begin // $0 hardwired to 0
       RegBank[Addr3] <= WriteData;
     end
   end

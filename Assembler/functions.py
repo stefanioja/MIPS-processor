@@ -6,15 +6,15 @@ def PreProcess(lines):
     counter = 0
 
     for line in lines:
-
         line = line.lower()
-        line = line.split("#", 1)[0]                                #gets rid of comments
+        line = line.split("#", 1)[0]    #gets rid of comments
         line = line.strip(" ")
-
+        
+        #processing for jump keywords
         checkStartJump = line.find(":")
-        if checkStartJump != -1:                                    #processing for jump keywords
+        if checkStartJump != -1:
             symbol = line.split(":", 1)[0].strip(":").lstrip(" ")
-            symbolsList[symbol] = str(counter)                       
+            symbolsList[symbol] = str(counter)  #maps jump label to instruction address                      
             line = line[checkStartJump + 1:len(line) - 1] 
 
         if len(line) > 0:
@@ -41,8 +41,12 @@ def ProcessLine(line):
             registers = splitLine[1].replace(" ", "")
             
             if(splitLine[0] == "jr"):
+                if registers.count("$") != 1:
+                    exit("instruction jr takes 1 register argument")
                 [regS, regT, regD] = [registers, "$0", "$0"]
             else:
+                if registers.count("$") < 3:
+                    exit("instruction {} takes 3 register arguments".format(splitLine[0]))
                 [regS, regT, regD] = [registers.split(",")[1], registers.split(",")[2], registers.split(",")[0]]
 
             return RType(instruction, regS, regT, regD);
@@ -50,6 +54,9 @@ def ProcessLine(line):
             splitLine = line.split(" ", 1)[1]
             splitLine = splitLine.replace(" ", "")
             nrCommas = line.count(",")
+
+            if splitLine.count("$") < 2:
+                exit("instruction {} takes 2 register arguments".format(instruction))
             if(nrCommas == 2):
                 [regS, immediate, regD] = [splitLine.split(",")[1], splitLine.split(",")[2], splitLine.split(",")[0]]
             else:
@@ -98,18 +105,17 @@ def IType(instruction, regS, regD, immediate):
     
     rs = DecodeRegister(regS)
     rd = DecodeRegister(regD)
-
+    immediate = immediate.strip("\n")
     if(immediate.isdigit()):
         immediate = format(int(immediate), 'b')
     else:
-        immediate = format(int(symbolsList[immediate.strip("\n")]), 'b')
+        exit("{} is not a valid number".format(immediate))
 
     return instruction + rs + rd + (16 - len(immediate)) * "0" + immediate
 
 def JType(instruction, offset):
     global symbolsList
 
-    offset.strip(" ")
     offset = offset.strip("\n")
     
     if(offset.isdigit()):

@@ -34,7 +34,7 @@ module MuxJ #(parameter N = 32)
       case(Select)
             0: Output = Input1;
             1: Output = Input2;
-        	2: Output = Input3;
-        endcase
+        	  2: Output = Input3;
+      endcase
     end
 endmodule
