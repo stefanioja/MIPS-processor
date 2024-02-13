@@ -1,6 +1,6 @@
 from functions import *
-import sys
-from os.path import exists
+import sys #for getting command line arguments
+from os.path import exists #for checking if file exists
 
 file_machineCode = "memfile.dat" 
 
@@ -18,6 +18,8 @@ with open(file_asm) as file:
         rawLines.append(line)
 lines = PreProcess(rawLines)
 
+cnt = 0 #for computing branch offset
 with open(file_machineCode, "w") as file:
     for line in lines:
-        file.write(ProcessLine(line) + '\n')
+        file.write(ProcessLine(line, cnt) + '\n')
+        cnt = cnt + 1

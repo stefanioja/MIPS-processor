@@ -1,7 +1,0 @@
-add $8, $9, $10
-and $8, $9, $10
-jal START
-add $8, $8, $0
-START:
-slti $8, $9, 10
-jr $ra
